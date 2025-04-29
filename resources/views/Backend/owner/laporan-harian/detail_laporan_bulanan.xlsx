@@ -1,0 +1,102 @@
+@extends('Backend.main')
+
+@section('title', 'Detail Laporan Bulanan')
+@section('page', 'Detail Laporan Bulanan')
+
+@section('content')
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3">Detail Laporan: {{ $report->report_name }}</h6>
+                </div>
+            </div>
+            <div class="card-body px-4 pb-2">
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <strong>Nama Laporan:</strong> <br>
+                        <span class="text-muted">{{ $report->report_name }}</span>
+                    </div>
+                    <div class="col-lg-6">
+                        <strong>Status:</strong> <br>
+                        <span class="badge
+                        @if($report->status == 'draft') bg-warning
+                        @elseif($report->status == 'diterbitkan') bg-success
+                        @elseif($report->status == 'arsip') bg-danger @endif">
+                            {{ ucfirst($report->status) }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <strong>Tanggal Laporan:</strong> <br>
+                        <span
+                            class="text-muted">{{ \Carbon\Carbon::parse($report->report_date)->format('d M Y, H:i') }}</span>
+                    </div>
+                    <div class="col-lg-6">
+                        <strong>Dibuat Oleh:</strong> <br>
+                        <span class="text-muted">{{ $report->user->nama ?? 'Tidak Diketahui' }}</span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-lg-12">
+                        <strong>Catatan:</strong> <br>
+                        <p class="text-muted">{{ $report->note ?: 'Tidak ada catatan' }}</p>
+                    </div>
+                </div>
+
+                <!-- Tabel untuk detail laporan -->
+                <div class="table-responsive mb-4">
+                    <h5>Detail Laporan</h5>
+                    <table class="table table-hover table-bordered align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Minggu
+                                    Ke
+                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total
+                                    Penjualan</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total
+                                    Pengeluaran</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Periode
+                                    Mulai</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Periode
+                                    Akhir</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if($reportDetails && $reportDetails->count())
+                            @foreach($reportDetails as $index => $detail)
+                            <tr>
+                                <td><span class="text-xs font-weight-bold">{{ $index + 1 }}</span></td>
+                                <td><span class="text-xs font-weight-bold">Rp
+                                        {{ number_format($detail->total_sales, 2, ',', '.') }}</span></td>
+                                <td><span class="text-xs font-weight-bold">Rp
+                                        {{ number_format($detail->total_expenses, 2, ',', '.') }}</span></td>
+                                <td><span
+                                        class="text-xs font-weight-bold">{{ \Carbon\Carbon::parse($detail->period_start)->format('d M Y') }}</span>
+                                </td>
+                                <td><span
+                                        class="text-xs font-weight-bold">{{ \Carbon\Carbon::parse($detail->period_end)->format('d M Y') }}</span>
+                                </td>
+                            </tr>
+                            @endforeach
+                            @else
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Data detail laporan tidak ditemukan.</td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-end">
+                    <a href="{{ route('daily-reports.index') }}" class="btn btn-secondary">Kembali</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
