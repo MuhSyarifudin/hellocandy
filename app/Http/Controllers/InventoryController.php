@@ -13,14 +13,14 @@ class InventoryController extends Controller
         // Mengambil semua data inventaris dengan relasi produk dan pengguna
         $inventories = Inventory::with('product', 'user')->latest()->paginate(10);
         $products = Product::all();
-        return view('backend.owner.inventaris.index', compact('inventories', 'products'));
+        return view('Backend.owner.inventaris.index', compact('inventories', 'products'));
     }
 
     public function create()
     {
         // Mengambil semua produk untuk digunakan di form pembuatan inventaris
         $products = Product::all();
-        return view('backend.owner.inventaris.create', compact('products'));
+        return view('Backend.owner.inventaris.create', compact('products'));
     }
 
     public function store(Request $request)
@@ -65,14 +65,14 @@ class InventoryController extends Controller
     public function show(Inventory $inventory)
     {
         // Menampilkan detail dari inventaris tertentu
-        return view('backend.inventory.show', compact('inventory'));
+        return view('Backend.inventory.show', compact('inventory'));
     }
 
     public function edit(Inventory $inventory)
     {
         // Mengambil semua produk untuk digunakan di form edit inventaris
         $products = Product::all();
-        return view('backend.owner.inventaris.edit', compact('inventory', 'products'));
+        return view('Backend.owner.inventaris.edit', compact('inventory', 'products'));
     }
 
     public function update(Request $request, Inventory $inventory)
