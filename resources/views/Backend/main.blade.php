@@ -16,7 +16,8 @@
     <link href="/admin/assets/css/nucleo-icons.css" rel="stylesheet" />
     <link href="/admin/assets/css/nucleo-svg.css" rel="stylesheet" />
     <!-- Font Awesome Icons -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"></script>
+    <script src="{{ url('/plugins/fontawesome-free/css/all.min.css') }}"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"></script> --}}
     {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
