@@ -21,6 +21,51 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <!-- CSS Files -->
     <link id="pagestyle" href=/admin/assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
+    <style>
+    .input-group-outline input:focus+label,
+    .input-group-outline input:not(:placeholder-shown)+label {
+        top: -10px;
+        left: 10px;
+        font-size: 12px;
+        color: #5e72e4;
+    }
+
+    .input-group-outline {
+        position: relative;
+        margin: 1rem 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+    }
+
+    .input-group-outline input {
+        border: none;
+        outline: none;
+        width: 100%;
+    }
+
+    .input-group-outline label {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        transition: 0.2s ease;
+        color: #999;
+    }
+
+    .input-group-outline input:focus {
+        border-color: #5e72e4;
+    }
+
+    #toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        z-index: 10;
+    }
+    </style>
 </head>
 
 <body class="bg-gray-200">
@@ -104,14 +149,17 @@
                                 @endif
                                 <form method="POST" action="{{ route('login') }}">
                                     @csrf
-                                    <div class="input-group input-group-outline my-3">
-                                        <label for="username" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="username" name="username" required>
+                                    <div class="input-group-outline">
+                                        <input type="text" class="form-control" id="username" name="username" required
+                                            placeholder=" " />
+                                        <label for="username">Username</label>
                                     </div>
-                                    <div class="input-group input-group-outline mb-3">
-                                        <label for="password" class="form-label">Password</label>
+                                    <div class="input-group-outline position-relative">
                                         <input type="password" class="form-control" id="password" name="password"
-                                            required>
+                                            required placeholder=" ">
+                                        <label for="password">Password</label>
+                                        <i id="toggle-password" class="fa fa-eye position-absolute"
+                                            style="top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer;"></i>
                                     </div>
                                     <div class="text-center">
                                         <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Sign
@@ -147,6 +195,7 @@
     <script src=/admin/assets/js/core/bootstrap.min.js"></script>
     <script src=/admin/assets/js/plugins/perfect-scrollbar.min.js"></script>
     <script src=/admin/assets/js/plugins/smooth-scrollbar.min.js"></script>
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -156,10 +205,23 @@
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
     </script>
+    <script>
+    const togglePassword = document.getElementById('toggle-password');
+    const passwordField = document.getElementById('password');
+
+    togglePassword.addEventListener('click', () => {
+        const type = passwordField.type === 'password' ? 'text' : 'password';
+        passwordField.type = type;
+
+        togglePassword.classList.toggle('fa-eye');
+        togglePassword.classList.toggle('fa-eye-slash');
+    });
+    </script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
     <script src=/admin/assets/js/material-dashboard.min.js?v=3.0.0"></script>
 </body>
+
 
 </html>

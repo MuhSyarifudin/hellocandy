@@ -2,68 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\SalesDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SalesDetailController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil semua rincian penjualan beserta produk dan penjualannya
-        $salesDetails = SalesDetail::with(['product', 'sale'])->get();
+        // Menentukan tahun mulai dari 2000 hingga tahun sekarang
+        $currentYear = date('Y');
+        $years = collect(range(2000, $currentYear));  // Membuat koleksi tahun dari 2000 sampai tahun sekarang
 
-        // Menampilkan view daftar rincian penjualan
-        return view('Backend.owner.riwayat-penjualan.index', compact('salesDetails'));
-    }
+        // Tahun yang dipilih oleh user (default tahun sekarang)
+        $selectedYear = $request->input('year', $currentYear);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        // Ambil data penjualan berdasarkan tahun yang dipilih
+        $salesData = DB::table('sales_details')
+            ->select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+            ->whereYear('created_at', $selectedYear) // Pastikan $selectedYear adalah 2024
+            ->groupBy('product_id')
+            ->get();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // Ambil detail produk berdasarkan ID produk
+        $products = Product::whereIn('id', $salesData->pluck('product_id'))->get();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(SalesDetail $salesDetail)
-    {
-        //
-    }
+        // Gabungkan data produk dengan total penjualan
+        $salesData = $salesData->map(function ($item) use ($products) {
+            $product = $products->where('id', $item->product_id)->first();
+            return [
+                'product_name' => $product->product_name ?? 'Tidak Diketahui',
+                'total_quantity' => $item->total_quantity,
+            ];
+        });
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(SalesDetail $salesDetail)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, SalesDetail $salesDetail)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(SalesDetail $salesDetail)
-    {
-        //
+        // Menampilkan view dengan data yang sudah disiapkan
+        return view('Backend.owner.riwayat-penjualan.index', compact('salesData', 'years', 'selectedYear'));
     }
 }

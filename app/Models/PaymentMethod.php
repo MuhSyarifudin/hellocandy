@@ -9,15 +9,24 @@ class PaymentMethod extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'method_name',
-    ];
+    protected $fillable = ['method_name', 'type'];
 
-    /**
-     * Relationship with the Sale model.
-     */
-    public function sale()
+    protected $table = 'payment_methods';
+
+    public function sales()
     {
-        return $this->hasMany(Sale::class, 'payment_method_id');
+        return $this->hasMany(Sale::class);
     }
+
+     // Relasi ke GuestOrderPartner
+     public function guestOrderPartners()
+     {
+         return $this->hasMany(GuestOrderPartner::class);
+     }
+
+     public function guestOrders()
+     {
+         return $this->hasMany(GuestOrder::class);
+     }
+
 }

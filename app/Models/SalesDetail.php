@@ -17,12 +17,14 @@ class SalesDetail extends Model
     ];
 
     // Relasi banyak ke satu (Detail penjualan milik satu penjualan)
-    public function sale() {
+    public function sale()
+    {
         return $this->belongsTo(Sale::class);
     }
 
     // Relasi banyak ke satu (Detail penjualan terkait dengan satu produk)
-    public function product() {
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
 }

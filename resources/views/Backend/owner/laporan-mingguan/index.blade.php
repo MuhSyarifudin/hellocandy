@@ -37,8 +37,10 @@
                                     Penjualan</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total
                                     Pengeluaran</th>
+                                @if ($role !== 'kasir')
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi
                                 </th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -53,23 +55,29 @@
                                         {{ number_format($weeklyReport->total_sales, 2, ',', '.') }}</span></td>
                                 <td><span class="text-xs font-weight-bold">Rp
                                         {{ number_format($weeklyReport->total_expenses, 2, ',', '.') }}</span></td>
+                                @if ($role !== 'kasir')
                                 <td class="align-middle">
                                     <a href="{{ route('weekly-reports.edit', $weeklyReport->id) }}"
                                         class="btn btn-warning">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit"></i> Edit
                                     </a>
                                     <form action="{{ route('weekly-reports.destroy', $weeklyReport->id) }}"
                                         method="POST" style="display:inline;" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger"> <i
-                                                class="fas fa-trash-alt"></i></button>
+                                        <button type="submit" class="btn btn-danger"> <i class="fas fa-trash-alt"></i>
+                                            Delete</button>
                                     </form>
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-end">
+                    {{ $weeklyReports->links() }}
+                    <!-- Ini menambahkan tombol untuk navigasi -->
                 </div>
             </div>
         </div>
@@ -80,8 +88,9 @@
 <div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addReportModalLabel">Tambah Laporan Mingguan Baru</h5>
+            <div class="modal-header bg-gradient-primary ">
+                <h5 class="modal-title text-white text-capitalize ps-3 " id="addReportModalLabel">Tambah Laporan
+                    Mingguan Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -112,8 +121,9 @@
                             step="0.01" required>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                                class="fas fa-times"></i> Batal</button>
                     </div>
                 </form>
             </div>
@@ -127,16 +137,15 @@ function confirmDelete() {
     return confirm('Apakah Anda yakin ingin menghapus laporan ini?');
 }
 
-// Menyembunyikan alert setelah beberapa detik
-window.onload = function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(() => {
-            successAlert.classList.remove('show');
-            successAlert.style.display = 'none';
-        }, 5000); // 5 detik
+// Menghilangkan alert setelah 5 detik
+setTimeout(() => {
+    const alert = document.getElementById('success-alert');
+    if (alert) {
+        alert.style.transition = 'opacity 0.5s';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500); // Hapus dari DOM
     }
-}
+}, 5000);
 </script>
 
 @endsection

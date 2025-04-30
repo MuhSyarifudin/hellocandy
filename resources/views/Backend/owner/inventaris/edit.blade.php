@@ -13,12 +13,10 @@
             </div>
             <div class="card-body px-0 pb-2">
                 @if (session('success'))
-                <div class="text-white text-capitalize ps-3 alert alert-success fade show" role="alert">
+                <div id="success-alert" class="alert alert-success fade show text-white" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 @endif
-
                 <form action="{{ route('inventory.update', $inventory->id) }}" method="POST">
                     @csrf
                     @method('PUT')
@@ -35,6 +33,17 @@
                         </select>
                     </div>
 
+                    <!-- Jenis -->
+                    <div class="mb-3 border p-3 rounded">
+                        <label for="type" class="form-label">Jenis Inventaris</label>
+                        <select class="form-control border" id="type" name="type" required>
+                            <option value="operasional" {{ $inventory->type == 'operasional' ? 'selected' : '' }}>
+                                Operasional</option>
+                            <option value="non-operasional"
+                                {{ $inventory->type == 'non-operasional' ? 'selected' : '' }}>Non-Operasional</option>
+                        </select>
+                    </div>
+
                     <div class="mb-3 border p-3 rounded">
                         <label for="quantity_change" class="form-label">Jumlah Perubahan Stok</label>
                         <input type="number" class="form-control border" id="quantity_change" name="quantity_change"
@@ -42,7 +51,7 @@
                     </div>
 
                     <div class="mb-3 border p-3 rounded">
-                        <label for="reason" class="form-label">Alasan Perubahan</label>
+                        <label for="reason" class="form-label">Keterangan Perubahan</label>
                         <input type="text" class="form-control border" id="reason" name="reason"
                             value="{{ $inventory->reason }}" required>
                     </div>
@@ -54,12 +63,25 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Perbarui</button>
-                        <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Batal</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Perbarui</button>
+                        <a href="{{ route('inventory.index') }}" class="btn btn-secondary"><i class="fas fa-times"></i>
+                            Batal</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+// Menghilangkan alert setelah 5 detik
+setTimeout(() => {
+    const alert = document.getElementById('success-alert');
+    if (alert) {
+        alert.style.transition = 'opacity 0.5s';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500); // Hapus dari DOM
+    }
+}, 5000);
+</script>
 @endsection

@@ -26,12 +26,11 @@
             </div>
             <div class="card-body px-0 pb-2">
                 @if (session('success'))
-                <div class="alert alert-success fade show text-white ps-3" role="alert">
+                <div class="alert alert-success fade show" role="alert" id="successAlert">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 @endif
-
                 <div class="p-3">
                     <!-- Display Period Range -->
                     <p class="text-muted">Laporan dari Januari hingga Desember {{ $year }}</p>

@@ -13,16 +13,23 @@ class Expense extends Model
         'expense_name',
         'amount',
         'date',
-        'user_id'
+        'user_id',
+        'payment_type_id',
+        'note'
     ];
 
 
-      // Cast 'date' as a Carbon instance
-      protected $casts = [
+    // Cast 'date' as a Carbon instance
+    protected $casts = [
         'date' => 'datetime',
     ];
     // Relasi banyak ke satu (Pengeluaran dicatat oleh satu pengguna)
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
+    }
+    public function paymentType()
+    {
+        return $this->belongsTo(PaymentType::class);
     }
 }

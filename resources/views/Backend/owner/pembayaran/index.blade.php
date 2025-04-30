@@ -1,7 +1,7 @@
 @extends('Backend.main')
 
-@section('title', 'Manajemen Pengguna')
-@section('page', 'Daftar Pengguna')
+@section('title', 'Metode Pembayaran')
+@section('page', 'Daftar Metode Pembayaran')
 
 @section('content')
 <div class="row">
@@ -9,11 +9,13 @@
         <div class="card my-4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                 <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                    <h6 class="text-white text-capitalize ps-3">Daftar Pengguna</h6>
+                    <h6 class="text-white text-capitalize ps-3">Daftar Metode Pembayaran</h6>
                     <div class="text-start ps-3">
-                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#createUserModal">
-                            <i class="fas fa-plus"></i> Tambah Pengguna
+                        @if ($role !== 'kasir')
+                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#createPaymentModal">
+                            <i class="fas fa-plus"></i> Tambah Metode Pembayaran
                         </button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -28,95 +30,91 @@
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Username
-                                </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama
-                                    Lengkap</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Email
+                                    Metode</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tipe
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Peran
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Dibuat
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action
+                                @if ($role !== 'kasir')
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi
                                 </th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($users as $index => $user)
+                            @foreach($paymentMethods as $index => $method)
                             <tr>
                                 <td>
                                     <span class="text-xs font-weight-bold">{{ $index + 1 }}</span>
                                 </td>
                                 <td>
-                                    <span class="text-xs font-weight-bold">{{ $user->username }}</span>
+                                    <span class="text-xs font-weight-bold">{{ $method->method_name }}</span>
                                 </td>
                                 <td>
-                                    <span class="text-xs font-weight-bold">{{ $user->nama }}</span>
+                                    <span class="text-xs font-weight-bold">{{ $method->type }}</span>
                                 </td>
                                 <td>
-                                    <span class="text-xs font-weight-bold">{{ $user->email }}</span>
+                                    <span
+                                        class="text-xs font-weight-bold">{{ $method->created_at->format('d-m-Y H:i') }}</span>
                                 </td>
-                                <td>
-                                    <span class="text-xs font-weight-bold">{{ ucfirst($user->role) }}</span>
-                                </td>
+                                @if ($role !== 'kasir')
                                 <td class="align-middle">
-                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-secondary"
-                                        data-toggle="tooltip" data-original-title="Edit User">
+                                    <a href="{{ route('payment_methods.edit', $method->id) }}" class="btn btn-secondary"
+                                        data-toggle="tooltip" data-original-title="Edit Metode">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST"
+                                    <form action="{{ route('payment_methods.destroy', $method->id) }}" method="POST"
                                         style="display:inline;" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger" data-toggle="tooltip"
-                                            data-original-title="Delete User"> <i class="fas fa-trash-alt"></i>
-                                            Delete
+                                            data-original-title="Delete Metode">
+                                            <i class="fas fa-trash"></i> Delete
                                         </button>
                                     </form>
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-end">
+                    {{   $paymentMethods->links() }}
+                    <!-- Ini menambahkan tombol untuk navigasi -->
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal untuk Tambah Pengguna -->
-<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+<!-- Modal untuk Tambah Metode Pembayaran -->
+<div class="modal fade" id="createPaymentModal" tabindex="-1" aria-labelledby="createPaymentModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-gradient-primary ">
-                <h5 class="modal-title text-white text-capitalize ps-3 " id="createUserModalLabel">Tambah Pengguna</h5>
+                <h5 class="modal-title text-white text-capitalize ps-3 " id="createPaymentModalLabel">Tambah Metode
+                    Pembayaran</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('users.store') }}" method="POST">
+                <form action="{{ route('payment_methods.store') }}" method="POST">
                     @csrf
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control border" id="username" name="username" required>
+                    <div class="mb-3 border p-3 rounded">
+                        <label for="method_name" class="form-label">Nama Metode Pembayaran</label>
+                        <input type="text" class="form-control border" id="method_name" name="method_name" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Kata Sandi</label>
-                        <input type="password" class="form-control border" id="password" name="password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="role" class="form-label">Peran</label>
-                        <select class="form-control border" id="role" name="role" required>
-                            <option value="">Pilih Peran</option>
-                            <option value="kasir">Kasir</option>
-                            <option value="owner">Owner</option>
+                    <div class="mb-3 border p-3 rounded">
+                        <label for="type" class="form-label">Tipe Pembayaran</label>
+                        <select class="form-control border" id="type" name="type" required>
+                            <option value="">Pilih Tipe</option>
+                            <option value="DP 50%">DP 50%</option>
+                            <option value="Full">Full</option>
+                            <option value="QRIS">QRIS</option>
+                            <option value="Transfer">Transfer</option>
                         </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="nama" class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-control border" id="nama" name="nama" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email (Opsional)</label>
-                        <input type="email" class="form-control border" id="email" name="email">
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
@@ -132,7 +130,7 @@
 <!-- JavaScript untuk Konfirmasi Penghapusan -->
 <script>
 function confirmDelete() {
-    return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');
+    return confirm('Apakah Anda yakin ingin menghapus metode pembayaran ini?');
 }
 // Menghilangkan alert setelah 5 detik
 setTimeout(() => {

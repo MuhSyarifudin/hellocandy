@@ -8,12 +8,9 @@ use Illuminate\Http\Request;
 
 class WeeklyReportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $weeklyReports = WeeklyReport::with('report')->get();
+        $weeklyReports = WeeklyReport::with('report')->latest()->paginate(10);
 
         // Get the earliest report for each report name
         $reports = Report::select('id', 'report_name')
@@ -24,7 +21,8 @@ class WeeklyReportController extends Controller
             ->map(function ($group) {
                 return $group->first(); // Select the first (earliest) report from each group
             });
-        return view('Backend.owner.laporan-mingguan.index', compact('weeklyReports', 'reports'));
+            $role = auth()->user()->role;
+        return view('Backend.owner.laporan-mingguan.index', compact('weeklyReports', 'reports','role'));
     }
 
     public function store(Request $request)
@@ -46,18 +44,12 @@ class WeeklyReportController extends Controller
         return redirect()->route('weekly-reports.index')->with('success', 'Laporan Mingguan berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $weeklyReport = WeeklyReport::with('report')->findOrFail($id);
         return view('Backend.owner.laporan-mingguan.show', compact('weeklyReport'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $weeklyReport = WeeklyReport::with('report')->findOrFail($id);
@@ -72,9 +64,6 @@ class WeeklyReportController extends Controller
         return view('Backend.owner.laporan-mingguan.edit', compact('weeklyReport', 'reports'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $request->validate([
@@ -95,9 +84,6 @@ class WeeklyReportController extends Controller
         return redirect()->route('weekly-reports.index')->with('success', 'Laporan Mingguan berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $weeklyReport = WeeklyReport::findOrFail($id);

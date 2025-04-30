@@ -13,6 +13,7 @@ class Inventory extends Model
         'product_id',
         'quantity_change',
         'reason',
+        'type',
         'date',
         'user_id'
     ];

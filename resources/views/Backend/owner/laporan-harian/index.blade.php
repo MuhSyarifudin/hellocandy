@@ -19,9 +19,8 @@
             </div>
             <div class="card-body px-0 pb-2">
                 @if (session('success'))
-                <div class="alert alert-success fade show" role="alert" id="successAlert">
+                <div id="success-alert" class="alert alert-success fade show text-white" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 @endif
                 <div class="table-responsive p-0">
@@ -63,22 +62,28 @@
                                 <td><span class="text-xs font-weight-bold">{{ $report->user->nama }}</span></td>
                                 <td class="align-middle">
                                     <a href="{{ route('daily-reports.show', $report->id) }}" class="btn btn-info"><i
-                                            class="fas fa-eye"></i></a>
+                                            class="fas fa-eye"></i> Show</a>
+                                    @if ($role !== 'kasir')
                                     <a href="{{ route('daily-reports.edit', $report->id) }}" class="btn btn-warning">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit"></i> Edit
                                     </a>
                                     <form action="{{ route('daily-reports.destroy', $report->id) }}" method="POST"
                                         style="display:inline;" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger"> <i
-                                                class="fas fa-trash-alt"></i></button>
+                                        <button type="submit" class="btn btn-danger"> <i class="fas fa-trash-alt"></i>
+                                            Delete</button>
                                     </form>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-end">
+
+                    <!-- Ini menambahkan tombol untuk navigasi -->
                 </div>
             </div>
         </div>
@@ -89,8 +94,9 @@
 <div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addReportModalLabel">Tambah Laporan Bulan Baru</h5>
+            <div class="modal-header bg-gradient-primary ">
+                <h5 class="modal-title text-white text-capitalize ps-3 " id="addReportModalLabel">Tambah Laporan Bulan
+                    Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -128,12 +134,14 @@
                     </div>
                     <div class="mb-3 border p-3 rounded">
                         <label for="note" class="form-label">Catatan</label>
-                        <textarea class="form-control border" id="note" name="note"
-                            rows="3">{{ old('note', $report->note) }}</textarea>
+                        <textarea class="form-control border" id="note" name="note" rows="3"></textarea>
                     </div>
+
+
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                                class="fas fa-times"></i> Batal</button>
                     </div>
                 </form>
             </div>
@@ -147,17 +155,17 @@ function confirmDelete() {
     return confirm('Apakah Anda yakin ingin menghapus laporan ini?');
 }
 
-// Menyembunyikan alert setelah beberapa detik
-window.onload = function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(() => {
-            successAlert.classList.remove('show');
-            successAlert.style.display = 'none';
-        }, 5000); // 5 detik
+// Menghilangkan alert setelah 5 detik
+setTimeout(() => {
+    const alert = document.getElementById('success-alert');
+    if (alert) {
+        alert.style.transition = 'opacity 0.5s';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500); // Hapus dari DOM
     }
-}
+}, 5000);
 </script>
+
 
 
 

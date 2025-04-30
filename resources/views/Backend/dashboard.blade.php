@@ -13,16 +13,28 @@
                 </div>
                 <div class="text-end pt-1">
                     <p class="text-sm mb-0 text-capitalize">Today's Money</p>
-                    <h4 class="mb-0">Rp.{{ number_format($data['today_money'], 0, ',', '.') }}</h4>
+                    <h4 class="mb-0">
+                        @isset($data['today_money'])
+                        Rp.{{ number_format($data['today_money'], 0, ',', '.') }}
+                        @else
+                        Data not available
+                        @endisset
+                    </h4>
                 </div>
             </div>
             <hr class="dark horizontal my-0">
             <div class="card-footer p-3">
-                <p class="mb-0"><span class="text-success text-sm font-weight-bolder">{{ $data['money_change'] }}</span>
-                    than last week</p>
+                <p class="mb-0">
+                    @isset($data['money_change'])
+                    <span class="text-success text-sm font-weight-bolder">{{ $data['money_change'] }}</span>
+                    @else
+                    <span class="text-warning text-sm">No change data available</span>
+                    @endisset
+                </p>
             </div>
         </div>
     </div>
+
     <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
         <div class="card">
             <div class="card-header p-3 pt-2">
@@ -32,16 +44,25 @@
                 </div>
                 <div class="text-end pt-1">
                     <p class="text-sm mb-0 text-capitalize">Total Expenses</p>
-                    <h4 class="mb-0">Rp. {{ number_format($data['expenses'], 0, ',', '.') }}</h4>
+                    <h4 class="mb-0">
+                        @isset($data['expenses'])
+                        Rp. {{ number_format($data['expenses'], 0, ',', '.') }}
+                        @else
+                        Data not available
+                        @endisset
+                    </h4>
                 </div>
             </div>
             <hr class="dark horizontal my-0">
             <div class="card-footer p-3">
-                <p class="mb-0"><span
-                        class="text-danger text-sm font-weight-bolder">{{ $data['expenses_change'] }}</span>
-                    compared to last month</p>
+                <p class="mb-0">
+                    @isset($data['expenses_change'])
+                    <span class="text-danger text-sm font-weight-bolder">{{ $data['expenses_change'] }}</span>
+                    @else
+                    <span class="text-warning text-sm">No change data available</span>
+                    @endisset
+                </p>
             </div>
-
         </div>
     </div>
 
@@ -54,16 +75,28 @@
                 </div>
                 <div class="text-end pt-1">
                     <p class="text-sm mb-0 text-capitalize">Total Users</p>
-                    <h4 class="mb-0">{{ number_format($data['users']) }}</h4>
+                    <h4 class="mb-0">
+                        @isset($data['users'])
+                        {{ number_format($data['users']) }}
+                        @else
+                        Data not available
+                        @endisset
+                    </h4>
                 </div>
             </div>
             <hr class="dark horizontal my-0">
             <div class="card-footer p-3">
-                <p class="mb-0"><span class="text-success text-sm font-weight-bolder">{{ $data['users_change'] }}</span>
-                    than last month</p>
+                <p class="mb-0">
+                    @isset($data['users_change'])
+                    <span class="text-success text-sm font-weight-bolder">{{ $data['users_change'] }}</span>
+                    @else
+                    <span class="text-warning text-sm">No change data available</span>
+                    @endisset
+                </p>
             </div>
         </div>
     </div>
+
     <div class="col-xl-3 col-sm-6">
         <div class="card">
             <div class="card-header p-3 pt-2">
@@ -73,18 +106,70 @@
                 </div>
                 <div class="text-end pt-1">
                     <p class="text-sm mb-0 text-capitalize">Sales</p>
-                    <h4 class="mb-0">Rp. {{ number_format($data['sales'], 0, ',', '.') }}</h4>
+                    <h4 class="mb-0">
+                        @isset($data['sales'])
+                        Rp. {{ number_format($data['sales'], 0, ',', '.') }}
+                        @else
+                        Data not available
+                        @endisset
+                    </h4>
                 </div>
             </div>
             <hr class="dark horizontal my-0">
             <div class="card-footer p-3">
-                <p class="mb-0"><span class="text-success text-sm font-weight-bolder">{{ $data['sales_change'] }}</span>
-                    compared to last month</p>
+                <p class="mb-0">
+                    @isset($data['sales_change'])
+                    <span class="text-success text-sm font-weight-bolder">{{ $data['sales_change'] }}</span>
+                    @else
+                    <span class="text-warning text-sm">No change data available</span>
+                    @endisset
+                </p>
             </div>
-
         </div>
     </div>
 </div>
+
+
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h6>Grafik Tren Pendapatan</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="position: relative; width: 100%;">
+                    <img src="{{ route('chart.revenue', [
+                        'labels' => json_encode($data['sales_labels']),
+                        'data' => json_encode($data['sales_data']),
+                        'month' => now()->format('F'),
+                        'year' => now()->year
+                    ]) }}" class="img-fluid" alt="Grafik Tren Pendapatan"
+                        style="max-height: 400px; display: block; margin: auto;" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h6>Grafik Tren Pengeluaran</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="position: relative; width: 100%;">
+                    <img src="{{ route('chart.expense', [
+                        'labels' => json_encode($data['expense_labels']),
+                        'data' => json_encode($data['expense_data']),
+                        'month' => now()->format('F'),
+                        'year' => now()->year
+                    ]) }}" class="img-fluid" alt="Grafik Tren Pengeluaran"
+                        style="max-height: 400px; display: block; margin: auto;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <div class="row mt-4">
@@ -96,7 +181,8 @@
                         <h6>Sales Details</h6>
                         <p class="text-sm mb-0">
                             <i class="fa fa-check text-info" aria-hidden="true"></i>
-                            <span class="font-weight-bold">{{ $data['sales_details']->count() }} items</span> sold this
+                            <span class="font-weight-bold">{{ $data['sales_details']->count() }} items</span> sold
+                            this
                             month
                         </p>
                     </div>
@@ -122,7 +208,8 @@
                     <table class="table align-items-center mb-0">
                         <thead>
                             <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Product
                                 </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                     Quantity</th>
@@ -143,8 +230,8 @@
                                 <td>
                                     <div class="d-flex px-2 py-1">
                                         <div>
-                                            <img src="{{ $detail->product->image_url }}" class="avatar avatar-sm me-3"
-                                                alt="{{ $detail->product->name }}">
+                                            <img src="{{ asset('storage/' . $detail->product->image) }}"
+                                                class="avatar avatar-sm me-3" alt="{{ $detail->product->name }}">
                                         </div>
                                         <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-sm">{{ $detail->product->product_name }}</h6>
@@ -171,6 +258,7 @@
         </div>
     </div>
 
+
     <div class="col-lg-4 col-md-6">
         <div class="card h-100">
             <div class="card-header pb-0">
@@ -182,38 +270,60 @@
             </div>
             <div class="card-body p-3">
                 <div class="timeline timeline-one-side">
-                    @foreach($recentOrders as $order)
-                    @foreach($order->salesDetails as $detail)
+                    @forelse($recentOrders as $order)
                     <div class="timeline-block mb-3">
                         <span class="timeline-step">
                             <i class="material-icons text-success text-gradient">shopping_cart</i>
                         </span>
                         <div class="timeline-content">
-                            <h6 class="text-dark text-sm font-weight-bold mb-0">New order: {{ $detail->product_name }}
+                            <h6 class="text-dark text-sm font-weight-bold mb-0">
+                                Order #{{ $order->id }} - Rp.{{ number_format($order->total_amount, 0, ',', '.') }}
                             </h6>
                             <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
-                                {{ \Carbon\Carbon::parse($order->created_at)->format('d M Y h:i A') }}
+                                {{ $order->formatted_date }}
+                            </p>
+                            <div class="alert alert-info py-2 px-2 d-inline-block text-white text-xs font-weight-bold">
+                                <i class="fas fa-check-circle"></i> Diproses
+                            </div>
+                            <p class="text-sm text-muted mb-0">
+                                <i class="fas fa-user text-info"></i> {{ $order->user->nama ?? 'Guest' }}
+                            </p>
+                            <p class="text-sm text-muted">
+                                <i class="fas fa-money-bill text-warning"></i>
+                                {{ $order->paymentMethod->method_name ?? 'Unknown' }}
                             </p>
                         </div>
                     </div>
-                    @endforeach
-                    @endforeach
-                    @if ($recentOrders->isEmpty())
+                    @empty
                     <div class="timeline-block mb-3">
                         <span class="timeline-step">
                             <i class="material-icons text-dark text-gradient">info</i>
                         </span>
                         <div class="timeline-content">
                             <h6 class="text-dark text-sm font-weight-bold mb-0">No recent orders</h6>
-                            <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">There are no orders to display.
+                            <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                                There are no orders to display.
                             </p>
                         </div>
                     </div>
-                    @endif
+                    @endforelse
                 </div>
             </div>
         </div>
     </div>
 
+
+
+
 </div>
+
+<style>
+.chart-container {
+    overflow: hidden;
+    text-align: center;
+    max-height: 400px;
+}
+</style>
+
+
 @endsection

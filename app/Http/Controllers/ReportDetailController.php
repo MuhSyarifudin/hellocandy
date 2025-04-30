@@ -30,16 +30,20 @@ class ReportDetailController extends Controller
             ->distinct()
             ->pluck('year');
 
+        // Mendapatkan daftar tahun yang tersedia untuk laporan
+        $availableYears = Report::selectRaw('YEAR(report_date) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
         return view('Backend.owner.laporan-lengkap.index', compact('year', 'totalSales', 'totalExpenses', 'netProfit', 'availableYears'));
     }
 
-    // Menampilkan form untuk membuat detail laporan baru
     public function create()
     {
         return view('Backend.report-details.create');
     }
 
-    // Menyimpan detail laporan baru
     public function store(Request $request)
     {
         $request->validate([
@@ -54,14 +58,12 @@ class ReportDetailController extends Controller
         return redirect()->route('reports.index')->with('success', 'Detail laporan berhasil ditambahkan.');
     }
 
-    // Menampilkan form untuk mengedit detail laporan
     public function edit($id)
     {
         $reportDetail = ReportDetail::findOrFail($id);
         return view('Backend.owner.laporan-lengkap.edit', compact('reportDetail'));
     }
 
-    // Mengupdate detail laporan
     public function update(Request $request, $id)
     {
         // Validasi input dari form
@@ -90,8 +92,6 @@ class ReportDetailController extends Controller
         return redirect()->route('reports.index')->with('success', 'Detail laporan berhasil diperbarui.');
     }
 
-    // Menghapus detail laporan
-    // Method untuk menghapus laporan berdasarkan ID
     public function destroy($id)
     {
         // Mengambil data laporan berdasarkan ID
@@ -105,29 +105,27 @@ class ReportDetailController extends Controller
     }
 
     public function generatePdf($year)
-{
-    // Get all report details for the given year
-    $yearlyDetails = ReportDetail::whereYear('period_start', $year)
-        ->whereYear('period_end', $year)
-        ->get();
+    {
+        // Get all report details for the given year
+        $yearlyDetails = ReportDetail::whereYear('period_start', $year)
+            ->whereYear('period_end', $year)
+            ->get();
 
-    // Calculate total sales, total expenses, and net profit for the year
-    $totalSales = $yearlyDetails->sum('total_sales');
-    $totalExpenses = $yearlyDetails->sum('total_expenses');
-    $netProfit = $totalSales - $totalExpenses;
+        // Calculate total sales, total expenses, and net profit for the year
+        $totalSales = $yearlyDetails->sum('total_sales');
+        $totalExpenses = $yearlyDetails->sum('total_expenses');
+        $netProfit = $totalSales - $totalExpenses;
 
-    // Load the Blade view to generate the PDF
-    $pdf = Pdf::loadView('Backend.owner.laporan-lengkap.pdf', [
-        'year' => $year,
-        'totalSales' => $totalSales,
-        'totalExpenses' => $totalExpenses,
-        'netProfit' => $netProfit,
-        'yearlyDetails' => $yearlyDetails,
-    ]);
+        // Load the Blade view to generate the PDF
+        $pdf = Pdf::loadView('Backend.owner.laporan-lengkap.pdf', [
+            'year' => $year,
+            'totalSales' => $totalSales,
+            'totalExpenses' => $totalExpenses,
+            'netProfit' => $netProfit,
+            'yearlyDetails' => $yearlyDetails,
+        ]);
 
-    // Return the PDF file to download
-    return $pdf->download('laporan_tahunan_' . $year . '.pdf');
-}
-
-
+        // Return the PDF file to download
+        return $pdf->download('laporan_tahunan_' . $year . '.pdf');
+    }
 }

@@ -15,10 +15,14 @@ class Sale extends Model
         'user_id'
     ];
 
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
     // Relasi banyak ke satu (Penjualan dilakukan oleh satu kasir)
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Relasi satu ke banyak (Penjualan memiliki banyak detail penjualan)
@@ -27,8 +31,21 @@ class Sale extends Model
         return $this->hasMany(SalesDetail::class);
     }
 
+
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
+
+    public function guestOrders()
+    {
+        return $this->hasMany(GuestOrder::class);
+    }
+
+     // Relasi ke tabel partners
+     public function partner()
+     {
+         return $this->belongsTo(Partner::class, 'partner_id');
+     }
+
 }

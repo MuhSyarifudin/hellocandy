@@ -50,8 +50,9 @@
                             step="0.01" value="{{ $weeklyReport->total_expenses }}" required>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Update</button>
-                        <a href="{{ route('weekly-reports.index') }}" class="btn btn-secondary">Batal</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Perbarui</button>
+                        <a href="{{ route('weekly-reports.index') }}" class="btn btn-secondary"><i
+                                class="fas fa-times"></i> Batal</a>
                     </div>
                 </form>
             </div>
@@ -61,15 +62,15 @@
 
 <!-- JavaScript untuk Menyembunyikan alert setelah beberapa detik -->
 <script>
-window.onload = function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(() => {
-            successAlert.classList.remove('show');
-            successAlert.style.display = 'none';
-        }, 5000); // 5 detik
+// Menghilangkan alert setelah 5 detik
+setTimeout(() => {
+    const alert = document.getElementById('success-alert');
+    if (alert) {
+        alert.style.transition = 'opacity 0.5s';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500); // Hapus dari DOM
     }
-}
+}, 5000);
 </script>
 
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Storage;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -12,7 +13,9 @@ class ProductController extends Controller
     {
         $products = Product::with('category')->get(); // Mengambil semua produk beserta kategori
         $categories = Category::all();
-        return view('Backend.owner.produk.index', compact('products','categories'));
+        // Peran pengguna login (assume kolom role pada tabel users)
+        $role = auth()->user()->role;
+        return view('Backend.owner.produk.index', compact('products', 'categories', 'role'));
     }
 
     /**
@@ -33,18 +36,39 @@ class ProductController extends Controller
             'product_name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric',
+            'purchase_price' => 'required|numeric|min:0',
             'stock' => 'required|integer',
+            'unit' => 'required|string|in:pcs,set,box,tangkai',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi gambar
         ]);
 
-        Product::create($request->all());
+        // Proses unggah file gambar
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public'); // Menyimpan di disk public
+        }
+
+        // Menyimpan data produk ke database
+        Product::create([
+            'product_name' => $request->product_name,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'purchase_price' => $request->purchase_price,
+            'stock' => $request->stock,
+            'unit' => $request->unit,
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
-    /**
-     * Menampilkan form untuk mengedit produk.
-     */
+    public function show(Product $product)
+    {
+        return view('Backend.owner.produk.show', compact('product'));
+    }
+
     public function edit(Product $product)
     {
         $categories = Category::all(); // Mengambil semua kategori untuk pilihan
@@ -59,15 +83,37 @@ class ProductController extends Controller
         $request->validate([
             'product_name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'price' => 'required|numeric|min:0',
+            'purchase_price' => 'required|numeric|min:0',
+            'unit' => 'required|string|in:pcs,set,box,tangkai',
             'description' => 'nullable|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $product->update($request->all());
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama dari disk jika ada
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
+            // Simpan gambar baru
+            $imagePath = $request->file('image')->store('products', 'public');
+            $product->image = $imagePath;
+        }
+
+        // Update atribut lainnya
+        $product->update([
+            'product_name' => $request->product_name,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'purchase_price' => $request->purchase_price,
+            'unit' => $request->unit,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui dengan perubahan stok.');
     }
+
 
     /**
      * Menghapus produk dari database.

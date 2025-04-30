@@ -13,6 +13,11 @@
                 </div>
             </div>
             <div class="card-body px-0 pb-2">
+                @if (session('success'))
+                <div id="success-alert" class="alert alert-success fade show text-white" role="alert">
+                    {{ session('success') }}
+                </div>
+                @endif
                 <form action="{{ route('daily-reports.update', $report->id) }}" method="POST">
                     @csrf
                     @method('PUT')
@@ -41,12 +46,24 @@
                             rows="3">{{ old('note', $report->note) }}</textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                        <a href="{{ route('daily-reports.index') }}" class="btn btn-secondary">Batal</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                        <a href="{{ route('daily-reports.index') }}" class="btn btn-secondary"><i
+                                class="fas fa-times"></i> Batal</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<script>
+// Menghilangkan alert setelah 5 detik
+setTimeout(() => {
+    const alert = document.getElementById('success-alert');
+    if (alert) {
+        alert.style.transition = 'opacity 0.5s';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500); // Hapus dari DOM
+    }
+}, 5000);
+</script>
 @endsection

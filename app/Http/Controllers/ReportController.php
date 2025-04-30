@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Report;
 use Barryvdh\DomPDF\PDF;
-use App\Models\ReportDetail;
-use App\Models\WeeklyReport;
 use Illuminate\Http\Request;
-use App\Exports\DailyReportsExport;
-use Maatwebsite\Excel\Facades\Excel;
+
 
 class ReportController extends Controller
 {
@@ -24,14 +21,12 @@ class ReportController extends Controller
         })->map(function ($group) {
             return $group->first(); // Ambil hanya satu laporan dari setiap grup
         })->values(); // Kembalikan ke array
+        $role = auth()->user()->role;
 
         // Kembalikan ke view
-        return view('Backend.owner.laporan-harian.index', compact('reports', 'users'));
+        return view('Backend.owner.laporan-harian.index', compact('reports', 'users', 'role'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         // Ambil daftar pengguna untuk ditampilkan di form
@@ -41,9 +36,6 @@ class ReportController extends Controller
         return view('reports.create', compact('users'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         // Validasi input
@@ -70,9 +62,6 @@ class ReportController extends Controller
         return redirect()->route('daily-reports.index')->with('success', 'Laporan berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $report = Report::with(['user', 'weeklyReports'])->findOrFail($id);
@@ -83,9 +72,6 @@ class ReportController extends Controller
         return view('Backend.owner.laporan-harian.show', compact('report', 'sameNameReports'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
         $report = Report::findOrFail($id);
@@ -96,9 +82,6 @@ class ReportController extends Controller
         return view('Backend.owner.laporan-harian.edit', compact('report', 'users'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         // Validasi input dari form
@@ -124,9 +107,6 @@ class ReportController extends Controller
         return redirect()->route('daily-reports.index')->with('success', 'Laporan berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         // Cari laporan berdasarkan ID dan hapus

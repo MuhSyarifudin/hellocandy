@@ -2,6 +2,7 @@
 
 @section('title', 'Edit Penjualan')
 @section('page', 'Edit Penjualan')
+
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -13,49 +14,59 @@
             </div>
             <div class="card-body px-0 pb-2">
                 @if (session('success'))
-                <div class="alert alert-success">
+                <div id="success-alert" class="alert alert-success fade show text-white" role="alert">
                     {{ session('success') }}
                 </div>
                 @endif
                 <form action="{{ route('sales.update', $sale->id) }}" method="POST">
                     @csrf
                     @method('PUT')
-                    <!-- Menambahkan metode PUT untuk pembaruan -->
-                    <div class="mb-3">
+                    <div class="mb-3 border p-3 rounded">
                         <label for="date" class="form-label">Tanggal</label>
-                        <input type="datetime-local" class="form-control" id="date" name="date" value="{{ $sale->date}}"
-                            required>
+                        <input type="datetime-local" class="form-control border" id="date" name="date"
+                            value="{{ old('date', $sale->date) }}" required>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 border p-3 rounded">
                         <label for="total_amount" class="form-label">Total Penjualan (Rp)</label>
-                        <input type="number" class="form-control" id="total_amount" name="total_amount"
-                            value="{{ $sale->total_amount }}" required>
+                        <input type="number" class="form-control border" id="total_amount" name="total_amount"
+                            value="{{ old('total_amount', $sale->total_amount) }}" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="payment_method" class="form-label">Metode Pembayaran</label>
-                        <select class="form-control" id="payment_method" name="payment_method" required>
+                    <div class="mb-3 border p-3 rounded">
+                        <label for="payment_method_id" class="form-label">Metode Pembayaran</label>
+                        <select class="form-control border" id="payment_method_id" name="payment_method_id" required>
                             <option value="" disabled>Pilih Metode Pembayaran</option>
-                            <option value="cash" {{ $sale->payment_method == 'cash' ? 'selected' : '' }}>Tunai</option>
-                            <option value="card" {{ $sale->payment_method == 'card' ? 'selected' : '' }}>Kartu Kredit
+                            @foreach($paymentMethods as $method)
+                            <option value="{{ $method->id }}"
+                                {{ old('payment_method_id', $sale->payment_method_id) == $method->id ? 'selected' : '' }}>
+                                {{ $method->type }}
                             </option>
-                            <option value="e-wallet" {{ $sale->payment_method == 'e-wallet' ? 'selected' : '' }}>
-                                E-Wallet</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="user_id" class="form-label">Kasir</label>
-                        <select class="form-control" id="user_id" name="user_id" required>
-                            @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ $sale->user_id == $user->id ? 'selected' : '' }}>
-                                {{ $user->username }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Perbarui</button>
-                    <a href="{{ route('sales.index') }}" class="btn btn-secondary">Kembali</a>
+                    <div class="mb-3 border p-3 rounded">
+                        <label for="user_id" class="form-label">Kasir</label>
+                        <input type="text" class="form-control border" value="{{ $sale->user->username }}" readonly>
+                        <input type="hidden" id="user_id" name="user_id" value="{{ $sale->user_id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Perbarui</button>
+                        <a href="{{ route('sales.index') }}" class="btn btn-secondary"><i class="fas fa-times"></i>
+                            Kembali</a>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<script>
+// Menghilangkan alert setelah 5 detik
+setTimeout(() => {
+    const alert = document.getElementById('success-alert');
+    if (alert) {
+        alert.style.transition = 'opacity 0.5s';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500); // Hapus dari DOM
+    }
+}, 5000);
+</script>
 @endsection

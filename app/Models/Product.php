@@ -13,8 +13,11 @@ class Product extends Model
         'product_name',
         'category_id',
         'price',
+        'purchase_price',
         'stock',
-        'description'
+        'unit',
+        'image',
+        'description',
     ];
 
     // Relasi satu ke banyak (Produk memiliki banyak detail penjualan)
@@ -30,5 +33,12 @@ class Product extends Model
     // Relasi satu ke banyak (Produk memiliki banyak catatan inventaris)
     public function inventories() {
         return $this->hasMany(Inventory::class);
+    }
+    // Relasi ke tabel guest_orders melalui tabel pivot
+    public function guestOrders()
+    {
+        return $this->belongsToMany(GuestOrder::class, 'guest_order_product')
+                    ->withPivot('quantity', 'price')
+                    ->withTimestamps();
     }
 }
