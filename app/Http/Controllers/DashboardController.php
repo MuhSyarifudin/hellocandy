@@ -114,7 +114,10 @@ class DashboardController extends Controller
             'expense_data' => $expenseData,
             'current_week' => $currentWeek,
             'current_month' => $currentMonth,
-            'current_year' => $currentYear
+            'current_year' => $currentYear,
+            'money_change' => null,
+            'users_change' => null
+
         ];
 
         return view('Backend.dashboard', compact('data', 'recentOrders'));
