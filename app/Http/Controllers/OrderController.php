@@ -19,13 +19,13 @@ class OrderController extends Controller
         $paymentMethods = PaymentMethod::all();
         // Menampilkan view daftar pesanan tamu
         $role = auth()->user()->role;
-        return view('backend.owner.pemesanan.index', compact('guestOrders',  'partners',  'paymentMethods', 'role'));
+        return view('Backend.owner.pemesanan.index', compact('guestOrders',  'partners',  'paymentMethods', 'role'));
     }
     public function create()
     {
         // Ambil semua kategori beserta produk di dalamnya
         $categories = Category::with('products')->get();
-        return view('backend.owner.pemesanan.create', compact('categories'));
+        return view('Backend.owner.pemesanan.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -74,14 +74,14 @@ class OrderController extends Controller
     {
         // Menampilkan detail pesanan guest
         $order = GuestOrder::with(['products', 'guestOrderPartners.paymentMethod'])->findOrFail($id);
-        return view('backend.owner.pemesanan.show', compact('order'));
+        return view('Backend.owner.pemesanan.show', compact('order'));
     }
 
     public function edit($id)
 {
     $order = GuestOrder::with('products')->findOrFail($id);
     $categories = Category::with('products')->get();
-    return view('backend.owner.pemesanan.edit', compact('order', 'categories'));
+    return view('Backend.owner.pemesanan.edit', compact('order', 'categories'));
 }
 
 public function update(Request $request, $id)
@@ -133,7 +133,7 @@ public function update(Request $request, $id)
 public function printNota($id)
 {
     $order = GuestOrder::with('products','guestOrderPartners.paymentMethod')->findOrFail($id);
-    return view('backend.owner.pemesanan.nota', compact('order'));
+    return view('Backend.owner.pemesanan.nota', compact('order'));
 }
 
 public function updateStatus(Request $request, $id)
